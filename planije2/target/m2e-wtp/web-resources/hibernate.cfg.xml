@@ -9,9 +9,11 @@
         <property name="hibernate.connection.password"></property>
         <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/planije2</property>
         <property name="hibernate.connection.username">root</property>
-        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.hbm2ddl.auto">validate</property>
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.format_sql">true</property>
+        
+        <property name="hibernate.enable_lazy_load_no_trans">true</property>
 
         <mapping class="web.beans.Achievement"/>
         <mapping class="web.beans.Task"/>
