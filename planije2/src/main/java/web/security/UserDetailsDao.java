@@ -8,11 +8,11 @@ import org.hibernate.Transaction;
 
 public class UserDetailsDao implements UserDetailsServices{
 
-    private UserDao userDao;
+    private UserDao userDao = new UserDao();
 
     @Override
     public UserDetails loadUserDetailsByUsername(String username) {
-        UserDetails userDetails;
+    	UserDetails userDetails;
         User user = userDao.getUserByUsername(username);
         userDetails = new UserDetails(user.getUserId(), user.getUsername(), user.getRoles());
         return userDetails;
@@ -27,10 +27,12 @@ public class UserDetailsDao implements UserDetailsServices{
             // start a transaction
             transaction = session.beginTransaction();
             // get an user object
-            user = (User) session.createQuery("FROM User U WHERE U.username = :username").setParameter("username", username)
+            user = (User) session.createQuery("FROM User U WHERE U.username = :username AND U.password = :password")
+            		.setParameter("username", username)
+            		.setParameter("password", password)
                     .uniqueResult();
-            System.out.println(user);
-            if (user != null && user.getPassword().equals(password)) {
+
+            if (user != null) {
                 return true;
             }
             // commit transaction

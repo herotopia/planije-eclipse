@@ -32,10 +32,15 @@ public class User {
 
     ///////////////////////////////////// Relationships ///////////////////////////////////////////////
 
-    @OneToMany(mappedBy = "teamOwner", fetch= FetchType.LAZY)
+    @OneToMany(mappedBy = "teamOwner", fetch = FetchType.LAZY)
     private Collection<Team> ownedTeams;
 
-    @ManyToMany(cascade = { CascadeType.ALL }, fetch= FetchType.LAZY)
+	public void addToOwnedTeams(Team team) {
+		ownedTeams.add(team);
+		team.setTeamOwner(this);
+	}
+    
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @JoinTable(
             name = "Adhesion",
             joinColumns = { @JoinColumn(name = "userId") },
@@ -44,11 +49,13 @@ public class User {
     private Collection<Team> teams;
 
     public void removeFromTeams(Team team){
-        this.teams.remove(team);
+        teams.remove(team);
+        team.getMembers().remove(this);
     }
 
     public void addToTeams(Team team){
         this.teams.add(team);
+        team.addMember(this);
     }
 
     @OneToMany(mappedBy = "taskOwner", fetch= FetchType.LAZY)
@@ -183,4 +190,6 @@ public class User {
     public void setAchievements(Collection<Achievement> achievements) {
         this.achievements = achievements;
     }
+
+
 }

@@ -27,11 +27,15 @@ public class Team {
     ///////////////////////////////////// Relationships ///////////////////////////////////////////////
 
     @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(name = "ownedTeams")
+    @JoinColumn(name = "teamOwner")
     private User teamOwner;
 
     @ManyToMany(mappedBy = "teams", fetch= FetchType.LAZY)
     private Collection<User> members;
+    
+	public void addMember(User user) {
+		members.add(user);
+	}
 
     @OneToMany(mappedBy = "sourceTeam", fetch= FetchType.LAZY)
     private Collection<Task> tasks;
@@ -119,6 +123,8 @@ public class Team {
     public void setTasks(Collection<Task> tasks) {
         this.tasks = tasks;
     }
+
+
 
 
 }

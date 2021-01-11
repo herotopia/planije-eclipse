@@ -1,6 +1,7 @@
 package web.dao;
 
 import web.dao.repository.UserRepository;
+import web.beans.Team;
 import web.beans.User;
 import web.utility.HibernateUtil;
 import org.hibernate.Session;
@@ -54,7 +55,8 @@ public class UserDao implements UserRepository {
         User user = null;
         try(Session session = HibernateUtil.getSessionFactory().openSession()){
             transaction = session.beginTransaction();
-            user = (User) session.load(User.class, userId);
+            user = (User) session.createQuery("FROM User U WHERE U.userId = :userId").setParameter("userId", userId)
+                    .uniqueResult();
             // commit transaction
             transaction.commit();
         } catch (Exception e) {
@@ -86,13 +88,49 @@ public class UserDao implements UserRepository {
         }
         return user;
     }
+    
+    public List<Team> getTeams(User user){
+        List<Team> teams = new ArrayList<>();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        teams = (List<Team>) session.createQuery("SELECT U.teams FROM User U WHERE U.userId = :userId")
+        		.setParameter("userId", user.getUserId())
+        		.getResultList();
+        transaction.commit();
+        return teams;
+    }
+    
+    public List<Team> addToTeams(String userId, Team team){
+        List<Team> teams = new ArrayList<>();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        teams = (List<Team>) session.createQuery("SELECT U.teams FROM User U WHERE U.userId = :userId")
+        		.setParameter("userId", userId)
+        		.getResultList();
+        teams.add(team);
+        transaction.commit();
+        return teams;
+    }
+    
+    public List<Team> getOwnedTeams(User user){
+        List<Team> ownedTeams = new ArrayList<>();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
+        ownedTeams = (List<Team>) session.createQuery("SELECT U.ownedTeams FROM User U WHERE U.userId = :userId")
+        		.setParameter("userId", user.getUserId())
+        		.getResultList();
+        transaction.commit();
+        return ownedTeams;
+    }
 
     public List<User> getUsers(){
-        List<User> users = new ArrayList();
+        List<User> users = new ArrayList<>();
         Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
         String qr = "FROM User"; //Entity name
         Query query = session.createQuery(qr);
         users = query.list();
+        transaction.commit();
         return users;
     }
 

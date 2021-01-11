@@ -30,11 +30,12 @@ public class ProfileServlet extends HttpServlet {
         request.setAttribute("User",user);
     }
 
+    //Incomplete
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         UserDetails userDetails = (UserDetails) session.getAttribute("userDetails");
         User user = userDao.getUserById(userDetails.getUserId());
-        request.setAttribute("User",user);
+        
     }
 
 

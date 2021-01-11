@@ -11,14 +11,13 @@ import java.util.ArrayList;
 
 public class TeamDao implements TeamRepository {
 
-    private UserDao userDao;
+    private UserDao userDao = new UserDao();
 
     public void addTeam(Team team) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = session.beginTransaction();
         session.save(team);
         transaction.commit();
-        session.close();
     }
 
     @Override
@@ -64,31 +63,40 @@ public class TeamDao implements TeamRepository {
         return team;
     }
 
+    
     public Team getTeamByCode(String code) {
-        Transaction transaction = null;
-        Team team = null;
-        try(Session session = HibernateUtil.getSessionFactory().openSession()){
-            transaction = session.beginTransaction();
-            team = (Team) session.get(Team.class, code);
-            // commit transaction
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
+        
+            Transaction transaction = null;
+            Team team = null;
+            try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+                // start a transaction
+                transaction = session.beginTransaction();
+                // get a team object
+                team = (Team) session.createQuery("FROM Team T WHERE T.code = :code").setParameter("code", code)
+                        .uniqueResult();
+                // commit transaction
+                transaction.commit();
+            } catch (Exception e) {
+                if (transaction != null) {
+                    transaction.rollback();
+                }
+                e.printStackTrace();
             }
-            e.printStackTrace();
-        }
-        return team;
+            return team;
+        
     }
 
     @Override
     public boolean joinTeam(int userId, String code) {
         Session session = HibernateUtil.getSessionFactory().openSession();
+        Transaction transaction = session.beginTransaction();
         Team team = getTeamByCode(code);
         User user = userDao.getUserById(userId);
         if (team != null){
             user.addToTeams(team);
             session.update(team);
+            session.update(user);
+            transaction.commit();
             return true;
         }
         return false;

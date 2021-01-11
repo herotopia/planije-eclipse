@@ -16,7 +16,7 @@ public class HibernateUtil {
         if (sessionFactory == null) {
             try {
                 // Create registry
-                registry = new StandardServiceRegistryBuilder().configure(new File("target/m2e-wtp/web-resources/hibernate.cfg.xml")).build();
+                registry = new StandardServiceRegistryBuilder().configure(new File("planije2/target/m2e-wtp/web-resources/hibernate.cfg.xml")).build();
                 // Create MetadataSources
                 MetadataSources sources = new MetadataSources(registry);
                 // Create Metadata
